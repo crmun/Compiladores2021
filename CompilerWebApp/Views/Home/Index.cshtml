@@ -1,0 +1,143 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+    <h1>Compiladores 2021</h1>
+    @*<p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
+        <p><a href="https://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>*@
+
+    @*<div class="form-group">
+        <div class="col-md-12">
+            @Html.TextArea("textarea", new { @class = "form-control" })
+            
+        </div>
+    </div>*@
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <h2>Expresiones Regulares</h2>
+        <p>
+            @Html.TextArea("textarea", new { @class = "form-control" })
+        </p>
+        <p><a class="btn btn-default" href="#">Analizar &raquo;</a></p>
+    </div>
+    <div class="col-md-8">
+        <h2>AFN aplicando algoritmo de Thompson</h2>
+        <div id="cy" style="height:400px"></div>
+    </div>
+    @*<div class="col-md-4">
+        <h2>Tabla de Transiciones</h2>
+        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
+        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
+    </div>*@
+</div>
+
+@section Scripts{
+
+    <script type="text/javascript">
+        var cy;  
+        $("a").click(function () {
+
+            var regex = window.parent.tinymce.get('textarea').getContent().replace(/(&nbsp;)*/g, "").replace(/(<p>)*/g, "").replace(/<(\/)?p[^>]*>/g, "");
+            alert("Analizando Expresión Regular: "+regex);
+            //alert();
+            $.get("/Home/Analizar", {regex:regex}, function (data) {
+                //$(".result").html(data);
+
+                //var data = dat.
+                //var data = { "nodes": [{ "data": { "id": "0", "label": "0", "source": null, "target": null } }, { "data": { "id": "2", "label": "2", "source": null, "target": null } }, { "data": { "id": "3", "label": "3", "source": null, "target": null } }, { "data": { "id": "4", "label": "4", "source": null, "target": null } }, { "data": { "id": "5", "label": "5", "source": null, "target": null } }, { "data": { "id": "6", "label": "6", "source": null, "target": null } }], "edges": [{ "data": { "id": "02", "label": "a", "source": "0", "target": "2" } }, { "data": { "id": "23", "label": "b", "source": "2", "target": "3" } }, { "data": { "id": "30", "label": "ϵ", "source": "3", "target": "0" } }, { "data": { "id": "34", "label": "ϵ", "source": "3", "target": "4" } }, { "data": { "id": "04", "label": "ϵ", "source": "0", "target": "4" } }, { "data": { "id": "45", "label": "c", "source": "4", "target": "5" } }, { "data": { "id": "54", "label": "ϵ", "source": "5", "target": "4" } }, { "data": { "id": "56", "label": "ϵ", "source": "5", "target": "6" } }, { "data": { "id": "46", "label": "ϵ", "source": "4", "target": "6" } }] };
+                //cy.elements().remove(); cy.add(data); cy.load();
+                drawGraph(data);
+                alert("Análisis finalizado: " + data);
+            });            
+        });
+
+        function drawGraph(dat) {
+            var data = JSON.parse(dat);
+            //var data = { "nodes": [{ "data": { "id": "0", "label": "0", "source": null, "target": null } }, { "data": { "id": "2", "label": "2", "source": null, "target": null } }, { "data": { "id": "3", "label": "3", "source": null, "target": null } }, { "data": { "id": "4", "label": "4", "source": null, "target": null } }, { "data": { "id": "5", "label": "5", "source": null, "target": null } }, { "data": { "id": "6", "label": "6", "source": null, "target": null } }], "edges": [{ "data": { "id": "02", "label": "a", "source": "0", "target": "2" } }, { "data": { "id": "23", "label": "b", "source": "2", "target": "3" } }, { "data": { "id": "30", "label": "ϵ", "source": "3", "target": "0" } }, { "data": { "id": "34", "label": "ϵ", "source": "3", "target": "4" } }, { "data": { "id": "04", "label": "ϵ", "source": "0", "target": "4" } }, { "data": { "id": "45", "label": "c", "source": "4", "target": "5" } }, { "data": { "id": "54", "label": "ϵ", "source": "5", "target": "4" } }, { "data": { "id": "56", "label": "ϵ", "source": "5", "target": "6" } }, { "data": { "id": "46", "label": "ϵ", "source": "4", "target": "6" } }] };
+            //var data = {};
+            //console.log(data);
+            cy = cytoscape({
+                container: document.getElementById('cy'),
+                elements: data,
+                style: [
+                    {
+                        selector: 'node',
+                        style: {
+                            'label': 'data(label)',
+                            'width': '60px',
+                            'height': '60px',
+                            'color': 'blue',
+                            'background-fit': 'contain',
+                            'background-clip': 'none'
+                        }
+                    }, {
+                        selector: 'edge',
+                        style: {
+                            'curve-style': 'bezier',
+                            'text-background-color': 'yellow',
+                            'text-background-opacity': 0.4,
+                            'width': '1px',
+                            'target-arrow-shape': 'triangle',
+                            'control-point-step-size': '140px',
+                            'label': 'data(label)',
+                            'color': 'blue'// maps to data.label
+                        }
+                    }
+                ],
+                layout: {
+                    //name: 'breadthfirst'
+                    name: 'cose'
+                }
+            });
+            //cy.elements().remove(); cy.add(data); cy.layout({ name: 'cose' }); cy.load();
+        }
+
+        $(document).ready(function () {
+            
+
+            tinymce.init({
+                selector: 'textarea',
+                theme: 'modern',
+                height: 200,
+                plugins: [
+                    'advlist autolink link image lists charmap print preview hr anchor pagebreak',
+                    'searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking',
+                    'save table contextmenu directionality emoticons template paste textcolor code'
+                ],
+                //toolbar: 'undo redo | styleselect | bold italic | link image | mybutton',
+                toolbar: 'insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | print preview media fullpage | forecolor backcolor | mybutton',
+                menubar: true,
+                setup: function (editor) {
+                    @*var varMenu = "@ViewBag.AlertConfigParametros";
+                    varMenu = varMenu.replace(/&#39;/g, "'");*@
+
+                    editor.addButton('mybutton', {
+                        type: 'menubutton',
+                        text: 'Insertar REGEX...',
+                        icon: false,
+                        @*menu: @Html.Raw(ViewBag.AlertConfigParametros)*@
+                        menu: [{
+                            text: 'a|b',
+                            onclick: function () {
+                                editor.insertContent('a|b');
+                            }
+                        }, {
+                                text: '(ab)*c*',
+                            onclick: function () {
+                                editor.insertContent('(ab)*c*');
+                            }, 
+                                text: 'b|a|x',
+                            onclick: function () {
+                                editor.insertContent('(ab)*c*');
+                            }    
+                         }]
+                    });
+                },
+
+            });
+        });
+    </script>
+}
